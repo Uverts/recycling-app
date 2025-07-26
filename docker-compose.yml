@@ -1,0 +1,29 @@
+volumes:
+    client_node_modules:
+services:
+  api:
+    build: ./api
+    expose:
+      - 5000
+    volumes:
+      - ./api:/usr/src/app
+
+  client:
+    build: ./client
+    expose: 
+      - 5173
+    volumes:
+      - ./client:/usr/src/app
+      - client_node_modules:/usr/src/app/node_modules
+    depends_on:
+      - api
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.config:/etc/nginx/nginx.conf:ro
+    ports:
+      - 127.0.0.1:7800:7800
+    depends_on:
+      - api
+      - client
